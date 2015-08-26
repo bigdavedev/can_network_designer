@@ -30,9 +30,7 @@
 ##========================================================================
 
 include ( ${CMAKE_SOURCE_DIR}/cmake/AddGTest.cmake )
-include ( ${CMAKE_SOURCE_DIR}/cmake/AddGMock.cmake )
 
 add_gtest ( ${CMAKE_BINARY_DIR}/external )
-add_gmock ( ${CMAKE_BINARY_DIR}/external )
 
-add_subdirectory ( cantools_unit_tests )
+add_subdirectory ( unit_tests )

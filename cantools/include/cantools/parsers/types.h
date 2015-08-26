@@ -6,8 +6,8 @@
 
 typedef enum
 {
-    CAN_LITTLE_ENDIAN,
-    CAN_BIG_ENDIAN
+    CAN_BIG_ENDIAN,
+    CAN_LITTLE_ENDIAN
 } Endianness;
 
 typedef enum
@@ -20,15 +20,14 @@ struct dbc_signal
 {
     std::string name;
     unsigned char start_bit;
-    unsigned char end_bit;
     unsigned char bit_length;
-    Endianness endian;
+    Endianness endianness;
     Signedness signedness;
     double scale;
     double offset;
     double min;
     double max;
-    char* unit;
+    std::string unit;
 };
 
 typedef std::vector< dbc_signal > dbc_signal_list_type;

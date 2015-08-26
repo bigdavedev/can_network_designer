@@ -33,11 +33,11 @@ get_filename_component(ProjectId ${CMAKE_CURRENT_SOURCE_DIR} NAME )
 project ( ${ProjectId} )
 
 include_directories ( ${CMAKE_SOURCE_DIR}/cantools/include )
-file ( GLOB SOURCES *.cpp )
+file ( GLOB_RECURSE SOURCES *.cpp )
 
 message ( "GTEST_LIBRARIES = ${GTEST_LIBRARIES}" )
 add_executable ( ${PROJECT_NAME} ${SOURCES} )
-target_link_libraries ( ${PROJECT_NAME} libgtest libgmock libgmock_main cantools )
+target_link_libraries ( ${PROJECT_NAME} libgtest libgtest_main cantools )
 
 set ( ARGS --gtest_output=xml )
 add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} ${ARGS} )
