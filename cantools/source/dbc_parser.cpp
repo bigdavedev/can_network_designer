@@ -37,6 +37,39 @@
 
 namespace dbc
 {
+    namespace
+    {
+        std::string const MESSAGE_TYPE = "BO_ ";
+        std::string const SIGNAL_TYPE = " SG_ ";
+    }
+
+    dbc_file parse_dbc(std::stringstream && stream)
+    {
+        dbc_file result;
+        std::string line;
+        while(std::getline(stream, line))
+        {
+            if(line.substr(0, 4) == MESSAGE_TYPE)
+            {
+                // Trim off the BO_ noise
+                line.erase(0, 4);
+                auto message = on_parse_message(line);
+                result.messages.push_back(message);
+            }
+            else if(line.substr(0, 5) == SIGNAL_TYPE)
+            {
+                // Trim off the SG_ noise
+                line.erase(0, 5);
+                auto signal = on_parse_signal(line);
+                result.messages.back().signals.push_back(signal);
+            }
+            else
+            {
+                // Do nothing with attributes and value tables for now...
+            }
+        }
+        return result;
+    }
 
     dbc_message on_parse_message(std::string message_to_parse)
     {

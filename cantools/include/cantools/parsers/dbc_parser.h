@@ -32,6 +32,7 @@
 #define __dbc_parser_h__
 
 #include <cantools/parsers/types.h>
+#include <sstream>
 
 namespace dbc
 {
@@ -40,6 +41,7 @@ namespace dbc
         std::vector< dbc_message > messages;
     };
 
+    dbc_file parse_dbc(std::stringstream && stream);
     dbc_message on_parse_message(std::string message_to_parse);
     dbc_signal on_parse_signal(std::string signal_to_parse);
 
