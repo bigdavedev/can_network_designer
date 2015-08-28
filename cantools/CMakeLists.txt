@@ -32,7 +32,8 @@ project ( cantools )
 
 include_directories ( include )
 
-set ( SOURCES source/dbc_parser.cpp )
+set ( SOURCES source/dbc_parser.cpp
+              source/can_socket.cpp )
 
 add_library ( ${PROJECT_NAME} ${SOURCES} )
 target_link_libraries ( ${PROJECT_NAME} ${LIBRARIES} )

@@ -41,7 +41,7 @@ namespace
 
 TEST(DbcParserTest, ParseValidMessage)
 {
-    dbc_message message = dbc::on_parse_message(valid_message);
+    dbc::dbc_message message = dbc::on_parse_message(valid_message);
     EXPECT_EQ(message.name, "TestMessageName");
     EXPECT_NE(message.name, "TestMessageName:");
     EXPECT_EQ(message.id, 2301234567);
@@ -90,7 +90,7 @@ TEST(DbcParserTest, ExtractUnitFromSignal)
 
 TEST(DbcParserTest, ParseValidSignal)
 {
-    dbc_signal signal = dbc::on_parse_signal(valid_signal);
+    dbc::dbc_signal signal = dbc::on_parse_signal(valid_signal);
     EXPECT_EQ(signal.name, "TestSignalName");
     EXPECT_EQ(signal.start_bit, 0);
     EXPECT_EQ(signal.bit_length, 8);

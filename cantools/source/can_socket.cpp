@@ -28,63 +28,78 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  ************************************************************************/
-#ifndef __dbc_parser_h__
-#define __dbc_parser_h__
 
-#include <cantools/types.hpp>
-#include <sstream>
+#include <cantools/devices/can_socket.hpp>
 
-namespace dbc
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <string.h>
+#include <unistd.h>
+
+ #include <iostream>
+
+namespace devices
 {
 
-    struct dbc_signal
+    can_socket::can_socket()
     {
-        std::string name;
-        unsigned char start_bit;
-        unsigned char bit_length;
-        Endianness endianness;
-        Signedness signedness;
-        double scale;
-        double offset;
-        double min;
-        double max;
-        std::string unit;
-    };
+    }
 
-    typedef std::vector< dbc_signal > dbc_signal_list_type;
-
-    struct dbc_message
+    can_socket::~can_socket()
     {
-        unsigned int id;
-        std::string name;
-        unsigned int length;
-        std::string sender;
-        dbc_signal_list_type signals;
-    };
+        std::cout << "Closing CAN socket\n";
+        close_socket();
+    }
 
-    struct dbc_file
+    int can_socket::read_frame(can::frame & frame)
     {
-        std::vector< dbc_message > messages;
-    };
+        can_frame tmp;
+        int bytes_read = read(socket_handle, (void*)&tmp, sizeof(can_frame));
 
-    dbc_file parse_dbc(std::stringstream && stream);
-    dbc_message on_parse_message(std::string message_to_parse);
-    dbc_signal on_parse_signal(std::string signal_to_parse);
+        frame.id = tmp.can_id;
+        frame.dlc = tmp.can_dlc;
+        memcpy(frame.data, tmp.data, tmp.can_dlc);
 
-    namespace detail
+        return bytes_read;
+    }
+
+    int can_socket::write_frame(can::frame & frame)
     {
-        std::pair< unsigned int, unsigned int > extract_bit_start_and_length_from_string(std::string signal);
+        can_frame tmp = {
+            .can_id = frame.id,
+            .can_dlc = frame.dlc
+        };
 
-        Endianness extract_endianness_from_string(std::string signal);
+        memcpy(tmp.data, frame.data, frame.dlc);
 
-        Signedness extract_signedness_from_string(std::string signal);
+        int bytes_sent = write(socket_handle, (void const*)&tmp, sizeof(can_frame));
+        return bytes_sent;
+    }
 
-        std::pair< double, double > extract_scale_and_offset_from_string(std::string signal);
+    void can_socket::init(const char* if_name, int protocol)
+    {
+        socket_handle = socket(PF_CAN, SOCK_RAW, protocol);
 
-        std::pair< double, double > extract_min_and_max_from_string(std::string signal);
+        ifreq ifr;
+        strncpy(ifr.ifr_name, if_name, IF_NAMESIZE);
 
-        std::string extract_unit_from_string(std::string signal);
+        ioctl(socket_handle, SIOCGIFINDEX, &ifr);
+
+        sockaddr_can const addr = {
+            .can_family = AF_CAN,
+            .can_ifindex = ifr.ifr_ifindex
+        };
+
+        bind(socket_handle, (sockaddr *)&addr, sizeof(addr));
+    }
+    void can_socket::close_socket() const
+    {
+        std::cout << "Closing CAN socket\n";
+        close(socket_handle);
     }
 }
-
-#endif

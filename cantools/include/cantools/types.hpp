@@ -28,8 +28,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  ************************************************************************/
-#ifndef __dbc_typed_h__
-#define __dbc_typed_h__
+#ifndef __dbc_types_h__
+#define __dbc_types_h__
 
 #include <vector>
 #include <string>
@@ -46,29 +46,14 @@ typedef enum
     UNSIGNED
 } Signedness;
 
-struct dbc_signal
+namespace can
 {
-    std::string name;
-    unsigned char start_bit;
-    unsigned char bit_length;
-    Endianness endianness;
-    Signedness signedness;
-    double scale;
-    double offset;
-    double min;
-    double max;
-    std::string unit;
-};
-
-typedef std::vector< dbc_signal > dbc_signal_list_type;
-
-struct dbc_message
-{
-    unsigned int id;
-    std::string name;
-    unsigned int length;
-    std::string sender;
-    dbc_signal_list_type signals;
-};
+    typedef struct
+    {
+        unsigned int id;
+        unsigned char dlc;
+        unsigned char data[8];
+    } frame;
+} // can
 
 #endif
